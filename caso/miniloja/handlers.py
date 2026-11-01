@@ -33,7 +33,12 @@ def post_pedidos(usuario_id, payload):
 
 
 def get_pedido(usuario_id, pedido_id):
+    """R4: só o dono vê o pedido.
+
+    Pedido de outro usuário responde 404 com o mesmo corpo de um pedido inexistente,
+    para não revelar que o id existe (um 403 confirmaria a existência e permitiria enumerar ids).
+    """
     pedido = _repo.obter(pedido_id)
-    if pedido is None:
+    if pedido is None or pedido.get("usuario_id") != usuario_id:
         return 404, {"erro": "não encontrado"}
     return 200, pedido
